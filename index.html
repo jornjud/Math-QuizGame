@@ -5,31 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เกมควิซ</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>เกมควิซ</h1>
-    <form id="player-form">
-        <label for="player-name">ชื่อผู้เล่น:</label>
-        <input type="text" id="player-name" name="player-name" required>
-        <button type="submit">เริ่มเกม</button>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-4xl font-bold mb-8">เกมควิซ</h1>
+    <form id="player-form" class="mb-8">
+        <label for="player-name" class="text-lg mr-4">ชื่อผู้เล่น:</label>
+        <input type="text" id="player-name" name="player-name" class="p-2 border border-gray-300 rounded mr-4" required>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">เริ่มเกม</button>
     </form>
-    <div id="mode-selection">
-        <button id="normal-mode">โหมดปกติ</button>
-        <button id="timed-mode">โหมดจับเวลา</button>
-        <div id="timer-settings" style="display: none;">
-            <label for="timer">ตั้งเวลา (วินาที):</label>
-            <input type="number" id="timer" name="timer" min="10" max="60" step="10" value="10">
+    <div id="mode-selection" class="mb-8">
+        <button id="normal-mode" class="bg-green-500 text-white px-4 py-2 rounded mr-4">โหมดปกติ</button>
+        <button id="timed-mode" class="bg-red-500 text-white px-4 py-2 rounded">โหมดจับเวลา</button>
+        <div id="timer-settings" class="mt-4" style="display: none;">
+            <label for="timer" class="text-lg mr-4">ตั้งเวลา (วินาที):</label>
+            <input type="number" id="timer" name="timer" class="p-2 border border-gray-300 rounded" min="10" max="60" step="10" value="10">
         </div>
     </div>
-    <div id="quiz-section" style="display: none;">
-        <div id="question"></div>
-        <input type="number" id="answer" name="answer">
-        <button id="submit-answer">ส่งคำตอบ</button>
+    <div id="quiz-section" class="mb-8" style="display: none;">
+        <div id="question" class="text-2xl mb-4"></div>
+        <input type="number" id="answer" name="answer" class="p-2 border border-gray-300 rounded mb-4">
+        <div id="numeric-keypad" class="grid grid-cols-3 gap-4 mb-4">
+            <button class="bg-gray-300 p-4 rounded" data-value="1">1</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="2">2</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="3">3</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="4">4</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="5">5</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="6">6</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="7">7</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="8">8</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="9">9</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="0">0</button>
+            <button class="bg-gray-300 p-4 rounded" data-value="clear">C</button>
+        </div>
+        <button id="submit-answer" class="bg-blue-500 text-white px-4 py-2 rounded">ส่งคำตอบ</button>
+        <button id="return-main-menu" class="bg-yellow-500 text-white px-4 py-2 rounded mt-4">กลับไปที่เมนูหลัก</button>
     </div>
-    <div id="statistics" style="display: none;">
-        <h2>สถิติการเล่น</h2>
-        <p id="mode-played"></p>
-        <p id="score"></p>
+    <div id="statistics" class="mt-8" style="display: none;">
+        <h2 class="text-2xl font-bold mb-4">สถิติการเล่น</h2>
+        <p id="mode-played" class="text-lg mb-2"></p>
+        <p id="score" class="text-lg"></p>
     </div>
     <script src="script.js"></script>
 </body>

@@ -17,6 +17,23 @@ document.getElementById('timed-mode').addEventListener('click', function() {
     });
 });
 
+document.getElementById('return-main-menu').addEventListener('click', function() {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('mode-selection').style.display = 'block';
+    document.getElementById('player-form').style.display = 'block';
+    document.getElementById('statistics').style.display = 'none';
+});
+
+document.getElementById('numeric-keypad').addEventListener('click', function(event) {
+    const value = event.target.getAttribute('data-value');
+    const answerInput = document.getElementById('answer');
+    if (value === 'clear') {
+        answerInput.value = '';
+    } else {
+        answerInput.value += value;
+    }
+});
+
 function startGame(mode, timerValue = 0) {
     document.getElementById('mode-selection').style.display = 'none';
     document.getElementById('quiz-section').style.display = 'block';
