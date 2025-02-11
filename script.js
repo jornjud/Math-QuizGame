@@ -65,6 +65,7 @@ function startGame(mode, timerValue = 0) {
             }
             endGame(mode, score);
         }
+        document.getElementById('answer').value = ''; // Clear the previous answer field
     });
 }
 
@@ -78,8 +79,9 @@ function generateQuestion() {
 }
 
 function endGame(mode, score) {
+    const playerName = document.getElementById('player-name').value; // Get the player's name
     document.getElementById('quiz-section').style.display = 'none';
     document.getElementById('statistics').style.display = 'block';
     document.getElementById('mode-played').textContent = `โหมดที่เล่น: ${mode === 'normal' ? 'ปกติ' : 'จับเวลา'}`;
-    document.getElementById('score').textContent = `คะแนนที่ได้: ${score}`;
+    document.getElementById('score').textContent = `คะแนนที่ได้: ${score} (ผู้เล่น: ${playerName})`; // Include the player's name in the statistics display
 }
