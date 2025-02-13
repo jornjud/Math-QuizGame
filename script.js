@@ -10,6 +10,9 @@ let incorrectAnswers = 0;
 let gameMode = '';
 let selectedTime = 0;
 
+// Global object to store details of the incorrectly answered question
+let incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
+
 // Timer functions
 function setTimer(duration) {
     timeLeft = duration;
@@ -36,7 +39,15 @@ function startTimer() {
         timerDisplay.innerText = `เวลา: ${timeLeft} วินาที`;
         if (timeLeft <= 0) {
             clearInterval(timer);
-            checkAnswer(true); // Auto-check on timeout
+            // On time out, record as incorrect answer
+            document.getElementById('result').innerText = `หมดเวลา! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
+            incorrectAnswers++;
+            incorrectQuestionData.question = document.getElementById('question').textContent;
+            incorrectQuestionData.correctAnswer = currentQuestion.answer;
+            // If no answer was entered, mark as "No answer"
+            const userAns = document.getElementById('answer').value;
+            incorrectQuestionData.userAnswer = userAns ? userAns : "No answer";
+            showGameOverMenu();
         }
     }, 1000);
 }
@@ -76,10 +87,14 @@ function startQuiz() {
     questionsAnswered = 0;
     correctAnswers = 0;
     incorrectAnswers = 0;
+    // Reset any previous incorrect answer data
+    incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
     generateQuestion();
     if (isTimedMode) {
         gameMode = 'Timed';
         startTimer();
+    } else {
+        gameMode = 'Normal';
     }
 }
 
@@ -120,44 +135,52 @@ function generateQuestion() {
 
 function checkAnswer(isTimeout = false) {
     const userAnswer = parseInt(document.getElementById('answer').value);
-    stopTimer();
     
     if (isTimeout) {
-        document.getElementById('result').innerText = `หมดเวลา! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
-        incorrectAnswers++;
+        // This branch is now handled in startTimer() when time reaches zero.
+        return;
     } else if (userAnswer === currentQuestion.answer) {
         score++;
         correctAnswers++;
         document.getElementById('result').innerText = 'ถูกต้อง! 🎉';
-        generateQuestion(); // Remove the condition to always generate new question
+        questionsAnswered++;
+        document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
+        generateQuestion();
+        if (isTimedMode) {
+            // Restart timer for the next question
+            startTimer();
+        }
     } else {
         document.getElementById('result').innerText = `ผิด! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
         incorrectAnswers++;
-        recordIncorrectAnswer();
+        // Record details of the incorrect answer
+        incorrectQuestionData.question = document.getElementById('question').textContent;
+        incorrectQuestionData.correctAnswer = currentQuestion.answer;
+        incorrectQuestionData.userAnswer = document.getElementById('answer').value;
+        questionsAnswered++;
+        document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
         showGameOverMenu();
     }
-
-    questionsAnswered++;
-    document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
 }
 
 function showGameOverMenu() {
+    stopTimer();
     document.getElementById('quiz-section').style.display = 'none';
     document.getElementById('game-over-menu').style.display = 'block';
     
     document.getElementById('final-player-name').textContent = playerName;
     document.getElementById('final-score').textContent = score;
     
-    if (isTimedMode) {
-        submitScore();
-    } else {
-        recordGameOver();
-    }
+    // Record all game data after game over
+    recordGameData();
 }
 
 function restartQuiz() {
     document.getElementById('game-over-menu').style.display = 'none';
     document.getElementById('quiz-section').style.display = 'block';
+    // Reset timer and incorrect answer details
+    stopTimer();
+    incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
     generateQuestion();
     if (isTimedMode) {
         startTimer();
@@ -170,6 +193,7 @@ function goToMainMenu() {
     resetQuiz();
 }
 
+// Reset game variables
 function resetQuiz() {
     score = 0;
     timeLeft = 0;
@@ -177,50 +201,30 @@ function resetQuiz() {
     questionsAnswered = 0;
     correctAnswers = 0;
     incorrectAnswers = 0;
+    incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
     document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
-    stopTimer();
     document.getElementById('timer-display').innerText = '';
+    stopTimer();
 }
 
-// Player data submission
-function recordIncorrectAnswer() {
-    const form = document.getElementById('record-answer-form');
-    form.playerName.value = playerName;
-    // Get the HTML content of the question (including <br> and formatting)
-    form.question.value = document.getElementById('question').innerHTML;
-    form.correctAnswer.value = currentQuestion.answer;
-    form.userAnswer.value = document.getElementById('answer').value;
-    form.submit();
-}
-
-function submitScore() {
+// Record all game data and submit the form
+function recordGameData() {
     const form = document.getElementById('submit-score-form');
     form.playerName.value = playerName;
     form.score.value = score;
     form.gameMode.value = gameMode;
-    form.selectedTime.value = selectedTime; // Only relevant for timed mode
+    form.selectedTime.value = isTimedMode ? selectedTime : "";
     form.questionsAnswered.value = questionsAnswered;
     form.correctAnswers.value = correctAnswers;
     form.incorrectAnswers.value = incorrectAnswers;
+    form.dateTime.value = new Date().toLocaleString();
+    form.incorrectQuestion.value = incorrectQuestionData.question;
+    form.incorrectUserAnswer.value = incorrectQuestionData.userAnswer;
+    form.incorrectCorrectAnswer.value = incorrectQuestionData.correctAnswer;
     form.submit();
 }
 
-function recordGameOver() {
-    const form = document.getElementById('submit-score-form');
-    form.playerName.value = playerName;
-    form.score.value = score;
-    form.gameMode.value = gameMode;
-    form.selectedTime.value = selectedTime;
-    form.questionsAnswered.value = questionsAnswered;
-    form.correctAnswers.value = correctAnswers;
-    form.incorrectAnswers.value = incorrectAnswers;
-    form.action = 'https://script.google.com/macros/s/AKfycbyh_yxJkzrKt-i4HVoXO_9kacplw_oQ4lDel-Rz69EhgQqU-UAX7_4run2q4NxjkeYM/exec?action=recordGameOver';
-    console.log('Form action:', form.action);
-    console.log('Form data:', form);
-	form.submit();
-}
-
-// Number pad
+// Number pad function
 function addToAnswer(num) {
     const answerField = document.getElementById('answer');
     answerField.value += num;

@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 ควิซคณิตศาสตร์ 🎉</title>
+    <title>🎉 ควิซคณิตศาสตร์ สำหรับเด็ก 🎉</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="quiz-container">
-        <h1>🎓 ควิซคณิตศาสตร์ 🎓</h1>
+        <h1>🎓 ควิซคณิตศาสตร์สำหรับเด็ก 🎓</h1>
 
         <!-- Main Menu -->
         <div id="main-menu">
             <input type="text" id="player-name" placeholder="กรอกชื่อผู้เล่น" />
             <div class="mode-buttons">
                 <button onclick="startNormalMode()">🎉 โหมดปกติ</button>
-                <button onclick="startTimedMode()">⏱️โหมดจับเวลา</button>
+                <button onclick="startTimedMode()">⏱️ โหมดจับเวลา</button>
             </div>
             <div id="timed-mode-options" style="display: none;">
                 <button onclick="setTimer(30)">⏱️ 30 วินาที</button>
                 <button onclick="setTimer(60)">⏱️ 60 วินาที</button>
                 <div>
-                    <input type="number" id="custom-timer" placeholder="กำหนดเอง" min="10" max="300">
+                    <input type="number" id="custom-timer" placeholder="กำหนดเอง (10-300)" min="10" max="300">
                     <button onclick="setCustomTimer()">🚀 เริ่ม</button>
                 </div>
             </div>
@@ -58,8 +58,8 @@
             <button onclick="goToMainMenu()">🏠 หน้าหลัก</button>
         </div>
 
-        <!-- Hidden Forms for Data Submission -->
-        <form id="submit-score-form" action="https://script.google.com/macros/s/AKfycbyh_yxJkzrKt-i4HVoXO_9kacplw_oQ4lDel-Rz69EhgQqU-UAX7_4run2q4NxjkeYM/exec" method="POST" target="hidden-iframe">
+        <!-- Hidden Form for Game Data Submission -->
+        <form id="submit-score-form" action="https://script.google.com/macros/s/AKfycbwhvMSEWFj6zSULD3S8IgwaaawQHa0XB4XYg1r_whENjYbhCwoChchHviIgKxSMOZAf/exec" method="POST" target="hidden-iframe">
             <input type="hidden" name="playerName" value="">
             <input type="hidden" name="score" value="">
             <input type="hidden" name="action" value="submitScore">
@@ -68,17 +68,13 @@
             <input type="hidden" name="questionsAnswered" value="">
             <input type="hidden" name="correctAnswers" value="">
             <input type="hidden" name="incorrectAnswers" value="">
-        </form>
-
-        <form id="record-answer-form" action="https://script.google.com/macros/s/AKfycbyh_yxJkzrKt-i4HVoXO_9kacplw_oQ4lDel-Rz69EhgQqU-UAX7_4run2q4NxjkeYM/exec" method="POST" target="hidden-iframe">
-            <input type="hidden" name="playerName" value="">
-            <input type="hidden" name="question" value="">
-            <input type="hidden" name="correctAnswer" value="">
-            <input type="hidden" name="userAnswer" value="">
+            <input type="hidden" name="dateTime" value="">
+            <input type="hidden" name="incorrectQuestion" value="">
+            <input type="hidden" name="incorrectUserAnswer" value="">
+            <input type="hidden" name="incorrectCorrectAnswer" value="">
         </form>
 
         <iframe name="hidden-iframe" style="display: none;"></iframe>
-
     </div>
 
     <script src="script.js"></script>

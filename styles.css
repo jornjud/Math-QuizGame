@@ -1,82 +1,80 @@
 body {
     font-family: 'Comic Sans MS', cursive, sans-serif;
-    background-color: #e0f7fa;
+    background: linear-gradient(135deg, #ffccff, #ccffff);
     text-align: center;
     padding: 20px;
+    margin: 0;
 }
 
 .quiz-container {
-    background-color: #ffffff;
+    background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
+    border: 3px dashed #ff4081;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     max-width: 600px;
-    margin: 0 auto;
-    transition: transform 0.2s;
+    margin: 20px auto;
 }
 
-.quiz-container:hover {
-    transform: scale(1.02);
-}
-
-input[type="text"] {
-    padding: 10px;
-    width: 200px;
-    font-size: 18px;
+input[type="text"],
+input[type="number"] {
+    padding: 12px;
+    width: 220px;
+    font-size: 20px;
     margin-top: 10px;
-    border: 2px solid #00796b;
-    border-radius: 5px;
+    border: 2px solid #ff4081;
+    border-radius: 10px;
     text-align: center;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     margin: 10px;
-    background-color: #00796b;
+    background-color: #ff4081;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     transition: background-color 0.3s;
 }
 
 button:hover {
-    background-color: #004d40;
+    background-color: #e91e63;
 }
 
 .number-button {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
     margin: 5px;
-    background-color: #4db6ac;
+    background-color: #ff80ab;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
 .number-button:hover {
-    background-color: #00897b;
+    background-color: #e040fb;
 }
 
 .question {
-    font-size: 28px;
+    font-size: 32px;
     line-height: 1.5;
-    color: #00796b;
+    color: #ff4081;
     margin: 20px 0;
     text-align: center;
 }
 
 #result {
-    font-size: 20px;
+    font-size: 22px;
     margin: 10px 0;
     color: #d32f2f;
 }
 
 #score {
-    font-size: 24px;
+    font-size: 26px;
     color: #388e3c;
     margin: 10px 0;
 }
@@ -85,6 +83,7 @@ button:hover {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    justify-content: center;
 }
 
 #timed-mode-options {
@@ -101,23 +100,25 @@ button:hover {
 }
 
 #timer-display {
-    font-size: 24px;
+    font-size: 26px;
     color: #d32f2f;
     margin: 10px 0;
 }
 
 #game-over-menu {
-    background-color: #ffffff;
+    background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
+    border: 3px dashed #ff4081;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
     display: none;
+    margin-top: 20px;
 }
 
 #game-over-menu p {
     margin: 10px 0;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 /* Hidden iframe for form submissions */
