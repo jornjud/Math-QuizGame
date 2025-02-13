@@ -137,3 +137,12 @@ iframe[name="hidden-iframe"] {
 .zero-button {
   grid-column: 2 / 3; /* วางปุ่ม 0 ไว้ตรงกลาง */
 }
+
+.aligned-question {
+  font-family: "Courier New", monospace; /* หรือฟอนต์ Monospaced อื่น */
+  font-size: 32px;
+  color: #ff4081;
+  text-align: right;     /* จัดข้อความชิดขวา */
+  line-height: 1.3;      /* ระยะห่างระหว่างบรรทัด */
+  display: inline-block; /* เพื่อให้ขนาดบล็อกกระชับตามเนื้อ */
+}
