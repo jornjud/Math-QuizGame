@@ -131,6 +131,8 @@ function generateQuestion() {
     document.getElementById('question').innerHTML = formattedQuestion;
     document.getElementById('answer').value = '';
     document.getElementById('result').innerText = '';
+    // โฟกัสช่องกรอกคำตอบเมื่อมีคำถามใหม่
+    document.getElementById('answer').focus();
 }
 
 function checkAnswer(isTimeout = false) {
@@ -229,3 +231,11 @@ function addToAnswer(num) {
     const answerField = document.getElementById('answer');
     answerField.value += num;
 }
+
+// เพิ่ม event listener สำหรับกด Enter ในช่องกรอกคำตอบ
+document.getElementById('answer').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // ป้องกันพฤติกรรมค่าเริ่มต้นของ Enter
+        checkAnswer();
+    }
+});

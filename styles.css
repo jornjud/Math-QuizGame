@@ -125,3 +125,15 @@ button:hover {
 iframe[name="hidden-iframe"] {
     display: none;
 }
+
+#number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin: 0 auto;
+  max-width: 180px;
+}
+
+.zero-button {
+  grid-column: 2 / 3; /* วางปุ่ม 0 ไว้ตรงกลาง */
+}
