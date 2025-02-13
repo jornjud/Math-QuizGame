@@ -50,4 +50,7 @@ function recordIncorrectAnswer(data) {
     sheet.getRange(newRow, 5).setValue(data.correctAnswer); // E: Correct Answer
     sheet.getRange(newRow, 6).setValue(data.userAnswer);   // F: User Answer
     sheet.getRange(newRow, 3).setValue(new Date());      // C: Timestamp
+    sheet.getRange(newRow, 9).setValue(data.question);   // I: Incorrectly Answered Question
+    sheet.getRange(newRow, 10).setValue(data.userAnswer); // J: Incorrect Answer
+    sheet.getRange(newRow, 11).setValue(data.correctAnswer); // K: Correct Answer
 }

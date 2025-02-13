@@ -120,7 +120,6 @@ function generateQuestion() {
 
 function checkAnswer(isTimeout = false) {
     const userAnswer = parseInt(document.getElementById('answer').value);
-    stopTimer();
     
     if (isTimeout) {
         document.getElementById('result').innerText = `หมดเวลา! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
@@ -129,7 +128,11 @@ function checkAnswer(isTimeout = false) {
         score++;
         correctAnswers++;
         document.getElementById('result').innerText = 'ถูกต้อง! 🎉';
+        stopTimer(); // Pd798
         generateQuestion(); // Remove the condition to always generate new question
+        if (isTimedMode) {
+            startTimer();
+        }
     } else {
         document.getElementById('result').innerText = `ผิด! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
         incorrectAnswers++;
