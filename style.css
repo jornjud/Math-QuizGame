@@ -1,0 +1,141 @@
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* ฟอนต์น่ารัก */
+    text-align: center;
+    background-color: #f0f8ff; /* สีฟ้าอ่อน */
+    color: #333;
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
+    display: flex; /* ใช้ Flexbox */
+    flex-direction: column; /* จัดเรียงแนวตั้ง */
+    min-height: 100vh; /* อย่างน้อยเต็มจอ */
+}
+
+h1 {
+    color: #e91e63; /* สีชมพู */
+    font-size: 3em;
+    margin-bottom: 0.5em;
+}
+
+/* จัดกลุ่ม elements หน้าแรก */
+#start-screen {
+    background-color: #fff;
+    border: 3px solid #ff9800;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto; /* จัดให้อยู่ตรงกลาง */
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+label {
+    font-size: 1.2em;
+    margin-right: 0.5em;
+    color: #673ab7; /* สีม่วง */
+    display: block; /* ให้ label ขึ้นบรรทัดใหม่ */
+    margin-bottom: 0.2em; /* เพิ่มระยะห่างด้านล่าง */
+}
+
+input[type="text"], select {
+    font-size: 1.2em;
+    padding: 0.3em;
+    border: 2px solid #673ab7;
+    border-radius: 5px;
+    margin-bottom: 1em;
+    width: calc(100% - 1em); /* ให้เต็มความกว้าง (ลบ padding) */
+    box-sizing: border-box; /* รวม padding ใน width */
+}
+
+button {
+    font-size: 1.2em;
+    padding: 0.3em;
+    border: 2px solid #673ab7;
+    border-radius: 5px;
+    margin-bottom: 1em;
+    cursor: pointer;
+}
+
+#start_button {
+    background-color: #4caf50; /* สีเขียว */
+    color: white;
+    padding: 10px 20px;
+}
+#start_button:hover{
+    background-color: #388e3c; /* สีเขียวเข้ม */
+}
+
+#quiz-container {
+    background-color: #fff;
+    border: 3px solid #ff9800; /* สีส้ม */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%; /* ปรับขนาดให้ responsive */
+    max-width: 500px; /* ไม่เกิน 500px */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2); /* เพิ่มเงา */
+}
+
+#question {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    white-space: pre-line;
+    text-align: right;
+    color: #4caf50; /* สีเขียว */
+}
+
+#submit-button {
+    background-color: #2196f3; /* สีน้ำเงิน */
+    color: white;
+    padding: 10px 20px;
+}
+
+#next_button {
+    background-color: #2196f3; /* สีน้ำเงิน */
+    color: white;
+    padding: 10px 20px;
+}
+
+#submit-button:hover, #next_button:hover {
+    background-color: #0d8bf2;
+}
+
+#feedback {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 1.5em;
+}
+
+#score {
+    color: #f44336; /* สีแดง */
+    font-size: 1.2em;
+}
+
+#timer {
+    color: #9c27b0; /* สีม่วงเข้ม */
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+#result-container {
+    background-color: #fff;
+    border: 3px solid #ff9800; /* สีส้ม */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%; /* ปรับขนาดให้ responsive */
+    max-width: 500px; /* ไม่เกิน 500px */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+#restart-button, #home-button {
+    background-color: #4caf50; /* สีเขียว */
+    color: white;
+    padding: 10px 20px;
+    margin: 5px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+}
+
+#restart-button:hover, #home-button:hover {
+    background-color: #388e3c; /* สีเขียวเข้มขึ้น */
+}
+ 

@@ -1,280 +1,308 @@
-// script.js
-let currentQuestion = {};
+// Global Variables
+let playerName;
+let mode;
 let score = 0;
-let playerName = '';
-let timer = null;
-let timeLeft = 0;
-let isTimedMode = false;
-let questionsAnswered = 0;
-let correctAnswers = 0;
-let incorrectAnswers = 0;
-let gameMode = '';
-let selectedTime = 0;
+let timeLeft;
+let timerInterval;
+let correctAnswer;
+let questionsCount = 0;
+let wrongAnswer = null; // เก็บข้อมูลข้อที่ผิด *ข้อเดียว*
 
-// เก็บข้อมูลของข้อที่ตอบผิด
-let incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
+// DOM Element References
+const playerNameInput = document.getElementById("player_name");
+const modeSelect = document.getElementById("mode");
+const startButton = document.getElementById("start_button");
+const quizContainer = document.getElementById("quiz-container");
+const questionDisplay = document.getElementById("question");
+const answerInput = document.getElementById("answer");
+const submitButton = document.getElementById("submit-button");
+const feedbackDisplay = document.getElementById("feedback");
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+const nextButton = document.getElementById("next_button");
+const resultContainer = document.getElementById("result-container");
+const restartButton = document.getElementById("restart-button");
+const homeButton = document.getElementById("home-button");
 
-/* ------------------- ส่วนฟังก์ชันช่วยจัดรูปแบบโจทย์ ------------------- */
-// เติมช่องว่างทางซ้าย (Pad Left) ให้ตัวเลขมีความยาวตามต้องการ
-function padLeft(num, width) {
-  let s = num.toString();
-  while (s.length < width) {
-    s = ' ' + s;
-  }
-  return s;
-}
-
-// จัดรูปแบบโจทย์ในแท็ก <pre> เพื่อให้ตัวเลขแต่ละหลักอยู่คอลัมน์เดียวกัน
-function formatQuestion(num1, op, num2) {
-  // เปลี่ยนสัญลักษณ์คูณให้เป็น '×' หรือจะใช้ '*' ก็ได้
-  const opChar = (op === '×') ? '×' : op;
-  
-  // กำหนดให้แต่ละตัวเลขมีความกว้าง 3 ตัวอักษร เช่น " 90", " 49"
-  const strNum1 = padLeft(num1, 3);
-  const strNum2 = padLeft(num2, 3);
-  
-  // สร้างโจทย์ 3 บรรทัด เช่น
-  //   90
-  // - 49
-  // =  ?
-  // แล้วห่อด้วย <pre class="aligned-question"> (กำหนดฟอนต์เป็น Monospaced ใน styles.css)
-  return `
-<pre class="aligned-question">
-${strNum1}
-${opChar}${strNum2.slice(1)}
-=  ?
-</pre>
-`;
-}
-/* -------------------------------------------------------------------- */
-
-// ตั้งเวลาสำหรับโหมดจับเวลา
-function setTimer(duration) {
-  timeLeft = duration;
-  isTimedMode = true;
-  selectedTime = duration;
-  startQuiz();
-}
-
-function setCustomTimer() {
-  const customTime = document.getElementById('custom-timer').value;
-  if (customTime) {
-    timeLeft = parseInt(customTime);
-    isTimedMode = true;
-    selectedTime = timeLeft;
-    startQuiz();
-  }
-}
-
-// เริ่มนับถอยหลัง
-function startTimer() {
-  if (timer) clearInterval(timer);
-  const timerDisplay = document.getElementById('timer-display');
-  timer = setInterval(() => {
-    timeLeft--;
-    timerDisplay.innerText = `เวลา: ${timeLeft} วินาที`;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      // หมดเวลา
-      document.getElementById('result').innerText = `หมดเวลา! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
-      incorrectAnswers++;
-      incorrectQuestionData.question = document.getElementById('question').textContent;
-      incorrectQuestionData.correctAnswer = currentQuestion.answer;
-      // ถ้าไม่มีการกรอกคำตอบ ให้เป็น "No answer"
-      const userAns = document.getElementById('answer').value;
-      incorrectQuestionData.userAnswer = userAns ? userAns : "No answer";
-      showGameOverMenu();
+// Event Listeners
+startButton.addEventListener("click", startGame);
+submitButton.addEventListener("click", checkAnswer);
+answerInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        checkAnswer();
     }
-  }, 1000);
-}
-
-function stopTimer() {
-  if (timer) clearInterval(timer);
-}
-
-/* ------------------- ฟังก์ชันการทำงานหลักของ Quiz ------------------- */
-function startNormalMode() {
-  isTimedMode = false;
-  gameMode = 'Normal';
-  playerName = document.getElementById('player-name').value;
-  if (playerName.trim() === '') {
-    alert('กรุณากรอกชื่อผู้เล่น');
-    return;
-  }
-  document.getElementById('main-menu').style.display = 'none';
-  document.getElementById('quiz-section').style.display = 'block';
-  generateQuestion();
-}
-
-function startTimedMode() {
-  document.getElementById('timed-mode-options').style.display = 'flex';
-}
-
-function startQuiz() {
-  playerName = document.getElementById('player-name').value;
-  if (playerName.trim() === '') {
-    alert('กรุณากรอกชื่อผู้เล่น');
-    return;
-  }
-  document.getElementById('main-menu').style.display = 'none';
-  document.getElementById('timed-mode-options').style.display = 'none';
-  document.getElementById('quiz-section').style.display = 'block';
-  
-  // รีเซ็ตค่าสถิติต่าง ๆ
-  score = 0;
-  questionsAnswered = 0;
-  correctAnswers = 0;
-  incorrectAnswers = 0;
-  incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
-
-  generateQuestion();
-  if (isTimedMode) {
-    gameMode = 'Timed';
-    startTimer();
-  } else {
-    gameMode = 'Normal';
-  }
-}
-
-// สุ่มโจทย์เลข + แสดงบนหน้า
-function generateQuestion() {
-  const operations = ['+', '-', '×'];
-  const operation = operations[Math.floor(Math.random() * operations.length)];
-  let num1, num2, answer;
-
-  if (operation === '×') {
-    num1 = Math.floor(Math.random() * 11) + 2;
-    num2 = Math.floor(Math.random() * 11);
-    answer = num1 * num2;
-  } else {
-    num1 = Math.floor(Math.random() * 90) + 10;
-    if (operation === '-') {
-      num2 = Math.floor(Math.random() * num1);
-    } else {
-      num2 = Math.floor(Math.random() * 90) + 10;
-    }
-    answer = operation === '+' ? num1 + num2 : num1 - num2;
-  }
-
-  currentQuestion = {
-    num1: num1,
-    num2: num2,
-    operation: operation,
-    answer: answer
-  };
-
-  // ใช้ formatQuestion() เพื่อจัดเลขให้อยู่คอลัมน์เดียวกัน
-  const formattedQuestion = formatQuestion(num1, operation, num2);
-  
-  document.getElementById('question').innerHTML = formattedQuestion;
-  document.getElementById('answer').value = '';
-  document.getElementById('result').innerText = '';
-  document.getElementById('answer').focus(); // โฟกัสช่องกรอกคำตอบ
-}
-
-// ตรวจคำตอบ
-function checkAnswer(isTimeout = false) {
-  const userAnswer = parseInt(document.getElementById('answer').value);
-  
-  if (isTimeout) {
-    // จัดการใน startTimer() เมื่อหมดเวลา
-    return;
-  } else if (userAnswer === currentQuestion.answer) {
-    score++;
-    correctAnswers++;
-    document.getElementById('result').innerText = 'ถูกต้อง! 🎉';
-    questionsAnswered++;
-    document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
-    generateQuestion();
-    if (isTimedMode) {
-      // เริ่มนับถอยหลังใหม่เมื่อขึ้นโจทย์ใหม่
-      startTimer();
-    }
-  } else {
-    document.getElementById('result').innerText = `ผิด! คำตอบที่ถูกคือ ${currentQuestion.answer} 😢`;
-    incorrectAnswers++;
-    // บันทึกข้อมูลข้อที่ตอบผิด
-    incorrectQuestionData.question = document.getElementById('question').textContent;
-    incorrectQuestionData.correctAnswer = currentQuestion.answer;
-    incorrectQuestionData.userAnswer = document.getElementById('answer').value;
-    questionsAnswered++;
-    document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
-    showGameOverMenu();
-  }
-}
-
-// แสดงเมนูเกมจบ
-function showGameOverMenu() {
-  stopTimer();
-  document.getElementById('quiz-section').style.display = 'none';
-  document.getElementById('game-over-menu').style.display = 'block';
-  
-  document.getElementById('final-player-name').textContent = playerName;
-  document.getElementById('final-score').textContent = score;
-  
-  // บันทึกข้อมูลลง Google Sheet
-  recordGameData();
-}
-
-function restartQuiz() {
-  document.getElementById('game-over-menu').style.display = 'none';
-  document.getElementById('quiz-section').style.display = 'block';
-  // รีเซ็ตข้อมูลและเริ่มใหม่
-  stopTimer();
-  incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
-  generateQuestion();
-  if (isTimedMode) {
-    startTimer();
-  }
-}
-
-function goToMainMenu() {
-  document.getElementById('game-over-menu').style.display = 'none';
-  document.getElementById('main-menu').style.display = 'block';
-  resetQuiz();
-}
-
-// รีเซ็ตตัวแปรเกม
-function resetQuiz() {
-  score = 0;
-  timeLeft = 0;
-  isTimedMode = false;
-  questionsAnswered = 0;
-  correctAnswers = 0;
-  incorrectAnswers = 0;
-  incorrectQuestionData = { question: "", userAnswer: "", correctAnswer: "" };
-  document.getElementById('score').innerText = `คะแนน: ${score} 🏆`;
-  document.getElementById('timer-display').innerText = '';
-  stopTimer();
-}
-
-// บันทึกข้อมูลทั้งหมดและส่งฟอร์ม
-function recordGameData() {
-  const form = document.getElementById('submit-score-form');
-  form.playerName.value = playerName;
-  form.score.value = score;
-  form.gameMode.value = gameMode;
-  form.selectedTime.value = isTimedMode ? selectedTime : "";
-  form.questionsAnswered.value = questionsAnswered;
-  form.correctAnswers.value = correctAnswers;
-  form.incorrectAnswers.value = incorrectAnswers;
-  form.dateTime.value = new Date().toLocaleString();
-  form.incorrectQuestion.value = incorrectQuestionData.question;
-  form.incorrectUserAnswer.value = incorrectQuestionData.userAnswer;
-  form.incorrectCorrectAnswer.value = incorrectQuestionData.correctAnswer;
-  form.submit();
-}
-
-// ปุ่มตัวเลข
-function addToAnswer(num) {
-  const answerField = document.getElementById('answer');
-  answerField.value += num;
-}
-
-// กด Enter ในช่องกรอกคำตอบ = ตรวจคำตอบ
-document.getElementById('answer').addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault(); // ป้องกัน default ที่อาจเกิดการ submit form
-    checkAnswer();
-  }
 });
+nextButton.addEventListener('click', nextQuestion);
+restartButton.addEventListener("click", restartGame);
+homeButton.addEventListener("click", goHome);
+
+// --- Game Functions ---
+
+function startGame() {
+    playerName = playerNameInput.value;
+    mode = modeSelect.value;
+
+    if (!playerName) {
+        alert("Please enter your name. ✍️");
+        return;
+    }
+
+    // ซ่อนหน้าจอเริ่มต้น และแสดงหน้าคำถาม
+    document.getElementById("start-screen").style.display = "none";
+    quizContainer.style.display = "block";
+
+    // รีเซ็ตค่าตัวแปรของเกม
+    score = 0;
+    questionsCount = 0;
+    wrongAnswer = null; // รีเซ็ตข้อมูลข้อผิดพลาด
+    scoreDisplay.textContent = score;
+    feedbackDisplay.textContent = "";
+    answerInput.value = ""; // เคลียร์ช่องตอบ
+
+    // ตั้งค่า timer หากเลือกโหมด timed
+    if (mode.startsWith("timed")) {
+        timeLeft = parseInt(mode.split("-")[1]);
+        timerDisplay.style.display = "block";
+        timerDisplay.textContent = "Time left: " + timeLeft;
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    generateQuestion(); // เริ่มถามคำถามแรก
+}
+
+function generateQuestion() {
+    let num1, num2, operator;
+    operator = getRandomOperator();
+
+    if (operator === "*") {
+        num1 = getRandomInt(2, 12);
+        num2 = getRandomInt(1, 12);
+    } else if (operator === "/") {
+        num2 = getRandomInt(1, 12);
+        num1 = num2 * getRandomInt(1, 12); // เพื่อให้หารลงตัว
+    } else {
+        num1 = getRandomInt(1, 99);
+        num2 = getRandomInt(1, 99);
+    }
+
+    questionDisplay.textContent = formatQuestion(num1, num2, operator);
+    correctAnswer = calculateAnswer(num1, num2, operator);
+    questionsCount++;
+}
+
+// ฟังก์ชันช่วยจัดรูปแบบคำถามสำหรับการแสดงผล
+function formatQuestion(num1, num2, operator) {
+    return `${num1.toString().padStart(2)}\n${operator} ${num2.toString().padStart(2)}`;
+}
+
+// ฟังก์ชันคำนวณคำตอบที่ถูกต้อง
+function calculateAnswer(num1, num2, operator) {
+    let answer;
+    switch (operator) {
+        case "+":
+            answer = num1 + num2;
+            break;
+        case "-":
+            answer = num1 - num2;
+            break;
+        case "*":
+            answer = num1 * num2;
+            break;
+        case "/":
+            answer = num1 / num2;
+            break;
+    }
+    return (typeof answer === 'number') ? Math.round(answer * 100) / 100 : answer; // ปัดเศษ 2 ตำแหน่ง
+}
+
+// ฟังก์ชันช่วยสุ่ม operator
+function getRandomOperator() {
+    const operators = ["+", "-", "*", "/"];
+    return operators[getRandomInt(0, operators.length - 1)];
+}
+
+// ฟังก์ชันช่วยสุ่มจำนวนเต็ม
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function checkAnswer() {
+    const userAnswer = parseFloat(answerInput.value);
+
+    if (isNaN(userAnswer)) {
+        feedbackDisplay.textContent = "Please enter a number. 🤔";
+        return;
+    }
+
+    if (userAnswer === correctAnswer) {
+        feedbackDisplay.textContent = "Correct! 🎉👍";
+        score++;
+        scoreDisplay.textContent = score;
+        answerInput.value = "";
+        nextQuestion();
+    } else {
+        feedbackDisplay.textContent = `Incorrect 😞`;
+        // บันทึกข้อมูลข้อที่ผิด (เพียงข้อเดียว)
+        wrongAnswer = {
+            question: questionDisplay.textContent,
+            userAnswer: userAnswer,
+            correctAnswer: correctAnswer
+        };
+        gameOver();
+    }
+}
+
+function nextQuestion() {
+    if (mode === "timed" && timeLeft <= 0) {
+        showResult();
+        return;
+    }
+    answerInput.value = "";
+    generateQuestion();
+}
+
+function updateTimer() {
+    timeLeft--;
+    timerDisplay.textContent = "Time left: " + timeLeft;
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        showResult();
+    }
+}
+
+function gameOver() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    quizContainer.style.display = "none";
+    resultContainer.style.display = "block";
+
+    let resultHTML = `
+        <h2>Game Over! 💔</h2>
+        <p>Name: ${playerName}</p>
+        <p>Mode: ${mode}</p>
+        <p>Score: ${score}</p>
+        <p>Questions count: ${questionsCount}</p>
+        <h3>Wrong Answer:</h3>
+        <p>Question: <pre>${wrongAnswer.question}</pre></p>
+        <p>Your Answer: ${wrongAnswer.userAnswer}</p>
+        <p>Correct Answer: ${wrongAnswer.correctAnswer}</p>
+    `;
+
+    resultHTML += `<button id="restart-in-result">Restart 🔄</button>
+                   <button id="home-in-result">Home 🏠</button>`;
+
+    resultContainer.innerHTML = resultHTML;
+
+    document.getElementById("restart-in-result").addEventListener("click", restartGame);
+    document.getElementById("home-in-result").addEventListener("click", goHome);
+
+    sendToGoogleSheet({
+        playerName: playerName,
+        mode: mode,
+        score: score,
+        wrongAnswer: wrongAnswer
+    });
+}
+
+function showResult() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    quizContainer.style.display = "none";
+    resultContainer.style.display = "block";
+
+    let resultHTML = `
+        <h2>Result 🏆</h2>
+        <p>Name: ${playerName}</p>
+        <p>Mode: ${mode}</p>
+        <p>Score: ${score}</p>
+        <p>Questions count: ${questionsCount}</p>
+        <h3>Wrong Answer:</h3>
+        <p>Question: <pre>${wrongAnswer.question}</pre></p>
+        <p>Your Answer: ${wrongAnswer.userAnswer}</p>
+        <p>Correct Answer: ${wrongAnswer.correctAnswer}</p>
+    `;
+
+    resultHTML += `<button id="restart-in-result">Restart 🔄</button>
+                   <button id="home-in-result">Home 🏠</button>`;
+
+    resultContainer.innerHTML = resultHTML;
+    document.getElementById("restart-in-result").addEventListener("click", restartGame);
+    document.getElementById("home-in-result").addEventListener("click", goHome);
+
+    sendToGoogleSheet({
+        playerName: playerName,
+        mode: mode,
+        score: score,
+        wrongAnswer: wrongAnswer
+    });
+}
+
+function restartGame() {
+    score = 0;
+    timeLeft = undefined;
+    timerInterval = undefined;
+    correctAnswer = undefined;
+    questionsCount = 0;
+    wrongAnswer = null; // รีเซ็ต
+
+    resultContainer.style.display = "none";
+    quizContainer.style.display = "block";
+    feedbackDisplay.textContent = "";
+    scoreDisplay.textContent = score;
+    answerInput.value = "";
+
+    if (mode.startsWith("timed")) {
+        timeLeft = parseInt(mode.split("-")[1]);
+        timerDisplay.style.display = "block";
+        timerDisplay.textContent = "Time left: " + timeLeft;
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+    generateQuestion();
+}
+
+function goHome() {
+    score = 0;
+    timeLeft = undefined;
+    timerInterval = undefined;
+    correctAnswer = undefined;
+    questionsCount = 0;
+    wrongAnswer = null; // รีเซ็ต
+    playerNameInput.value = "";
+
+    resultContainer.style.display = "none";
+    quizContainer.style.display = "none";
+    document.getElementById("start-screen").style.display = "block";
+    feedbackDisplay.textContent = "";
+    answerInput.value = "";
+}
+
+// --- Google Sheets Integration ---
+
+function sendToGoogleSheet(data) {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxjjp0iOm7h50Bcu7MyHSLyH6GP-xH0Gp7Y5xaUOfUZfDXr3-NLiLaTzMu88jiIaGGY/exec';
+
+    // ปรับข้อความในคอลัมน์ Question ให้แสดงเป็นบรรทัดเดียว
+    if (data.wrongAnswer && data.wrongAnswer.question) {
+        data.wrongAnswer.question = data.wrongAnswer.question.split("\n").join("").replace(/\s+/g, "");
+    }
+
+    fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors', // ใช้ no-cors เพื่อละเว้นปัญหา CORS
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(() => {
+        console.log('Request sent successfully');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
